@@ -6,6 +6,6 @@ public interface IEngine
     float Acceleration { get; }
     float BrakingPower { get; }
 
-    void Accelerate(float currentSpeed, Rigidbody rb);
-    void Brake(float currentSpeed, Rigidbody rb);
+    void Accelerate(Rigidbody rb);
+    void Brake(Rigidbody rb);
 }

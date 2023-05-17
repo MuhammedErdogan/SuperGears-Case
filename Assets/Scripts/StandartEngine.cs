@@ -13,17 +13,20 @@ public class StandardEngine : IEngine
         BrakingPower = brakingPower;
     }
 
-    public void Accelerate(float currentSpeed, Rigidbody rb)
+    public void Accelerate(Rigidbody rb)
     {
+        var currentSpeed = rb.velocity.magnitude;
         if (currentSpeed <= MaxSpeed)
         {
             currentSpeed += Acceleration * Time.deltaTime;
             rb.velocity = rb.transform.forward * currentSpeed;
+            Debug.Log("Current speed: " + currentSpeed);
         }
     }
 
-    public void Brake(float currentSpeed, Rigidbody rb)
+    public void Brake(Rigidbody rb)
     {
+        var currentSpeed = rb.velocity.magnitude;
         if (currentSpeed > 0)
         {
             currentSpeed -= BrakingPower * Time.deltaTime;

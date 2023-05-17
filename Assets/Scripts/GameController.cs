@@ -2,15 +2,27 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    private DependencyContainer container;
+    #region Singleton
+    public static GameController Instance { get; private set; }
+    #endregion
+
+    [SerializeField] private BaseCar _car;
+    private DependencyContainer _container;
+
 
     private void Awake()
     {
-        container = new DependencyContainer();
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+
+        _container = new DependencyContainer();
 
         IEngine standardEngine = new StandardEngine(100f, 10f, 10f);
-        container.Register<IEngine>(standardEngine);
+        _container.Register(standardEngine);
 
-        BaseCar car = new BaseCar(container.Resolve<IEngine>());
+        var sedan = _car as Sedan;
+        sedan.Initialize(_container);
     }
 }

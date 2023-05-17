@@ -2,18 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseCar : MonoBehaviour
+public abstract class BaseCar : MonoBehaviour
 {
-    public WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
-    public Transform frontLeftWheelTransform, frontRightWheelTransform, rearLeftWheelTransform, rearRightWheelTransform;
+    [SerializeField] private WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
+    [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform, rearLeftWheelTransform, rearRightWheelTransform;
 
     private Rigidbody rb;
-    private IEngine engine;
+    protected IEngine engine;
     private Vector3 startingPosition;
 
-    public BaseCar(IEngine engine)
+    public virtual void Initialize(DependencyContainer container)
     {
-        this.engine = engine;
+        this.engine = container.Resolve<IEngine>();
     }
 
     private void Awake()
@@ -24,8 +24,15 @@ public class BaseCar : MonoBehaviour
 
     private void Update()
     {
-        engine.Accelerate(rb.velocity.magnitude, rb);
-        engine.Brake(rb.velocity.magnitude, rb);
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            engine.Accelerate(rb);
+        }
+        else if (Input.GetKey(KeyCode.Space))
+        {
+            engine.Brake(rb);
+        }
+
         UpdateWheelPoses();
     }
 
