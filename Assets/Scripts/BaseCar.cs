@@ -7,13 +7,13 @@ public abstract class BaseCar : MonoBehaviour
     [SerializeField] private WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
     [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform, rearLeftWheelTransform, rearRightWheelTransform;
 
+    [Inject] protected IEngine engine;
     private Rigidbody rb;
-    protected IEngine engine;
     private Vector3 startingPosition;
 
     public virtual void Initialize(DependencyContainer container)
     {
-        this.engine = container.Resolve<IEngine>();
+        //this.engine = container.Resolve<IEngine>();
     }
 
     private void Awake()
@@ -22,7 +22,7 @@ public abstract class BaseCar : MonoBehaviour
         startingPosition = transform.position;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (Input.GetKey(KeyCode.UpArrow))
         {
@@ -32,7 +32,12 @@ public abstract class BaseCar : MonoBehaviour
         {
             engine.Brake(rb);
         }
+        else
+        {
+            engine.Decelerate(rb);
+        }
 
+        EventManager.TriggerEvent(EventManager.OnCarMove, rb);
         UpdateWheelPoses();
     }
 
@@ -47,15 +52,10 @@ public abstract class BaseCar : MonoBehaviour
     private void UpdateWheelPoseAndRot(WheelCollider wheelCollider, Transform wheelTransform)
     {
         wheelCollider.GetWorldPose(out Vector3 position, out _);
-
         wheelTransform.position = position;
 
-        float wheelRadius = wheelCollider.radius;
-        float wheelCircumference = 2 * Mathf.PI * wheelRadius;
-
-        float distanceTravelled = Vector3.Distance(startingPosition, transform.position);
-        float rotationAngle = 360 * (distanceTravelled / wheelCircumference);
-
+        // 2 * Mathf.PI * wheelCollider.radius = circumference of the wheel and Vector3.Distance(startingPosition, transform.position) = distance travelled by the car.
+        float rotationAngle = 360 * (Vector3.Distance(startingPosition, transform.position) / 2 * Mathf.PI * wheelCollider.radius);
         wheelTransform.rotation = Quaternion.Euler(rotationAngle, 0, 0);
     }
 }

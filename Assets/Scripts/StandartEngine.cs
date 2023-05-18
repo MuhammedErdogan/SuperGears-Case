@@ -1,36 +1,46 @@
 using UnityEngine;
 
-public class StandardEngine : IEngine
+public class StandardEngine : BaseEngine
 {
-    public float MaxSpeed { get; private set; }
-    public float Acceleration { get; private set; }
-    public float BrakingPower { get; private set; }
-
-    public StandardEngine(float maxSpeed, float acceleration, float brakingPower)
+    public StandardEngine(float maxSpeed, float acceleration, float brakingPower, float deceleration, int numberOfGears)
     {
         MaxSpeed = maxSpeed;
         Acceleration = acceleration;
         BrakingPower = brakingPower;
+        Deceleration = deceleration;
+        NumberOfGears = numberOfGears;
+        gearShiftSpeed = maxSpeed / numberOfGears;
     }
+}
 
-    public void Accelerate(Rigidbody rb)
+public class ElectricalEngine : BaseEngine
+{
+    private float _electiricity;
+
+    public ElectricalEngine(float maxSpeed, float acceleration, float brakingPower, float deceleration, int numberOfGears, float electiricity)
     {
-        var currentSpeed = rb.velocity.magnitude;
-        if (currentSpeed <= MaxSpeed)
-        {
-            currentSpeed += Acceleration * Time.deltaTime;
-            rb.velocity = rb.transform.forward * currentSpeed;
-            Debug.Log("Current speed: " + currentSpeed);
-        }
+        MaxSpeed = maxSpeed;
+        Acceleration = acceleration;
+        BrakingPower = brakingPower;
+        Deceleration = deceleration;
+        NumberOfGears = numberOfGears;
+        gearShiftSpeed = maxSpeed / numberOfGears;
+        _electiricity = electiricity;
     }
+}
 
-    public void Brake(Rigidbody rb)
+public class TurboEngine : BaseEngine
+{
+    private float _turboBoost;
+
+    public TurboEngine(float maxSpeed, float acceleration, float brakingPower, float deceleration, int numberOfGears, float turboBoost)
     {
-        var currentSpeed = rb.velocity.magnitude;
-        if (currentSpeed > 0)
-        {
-            currentSpeed -= BrakingPower * Time.deltaTime;
-            rb.velocity = rb.transform.forward * currentSpeed;
-        }
+        MaxSpeed = maxSpeed;
+        Acceleration = acceleration;
+        BrakingPower = brakingPower;
+        Deceleration = deceleration;
+        NumberOfGears = numberOfGears;
+        gearShiftSpeed = maxSpeed / numberOfGears;
+        _turboBoost = turboBoost;
     }
 }
