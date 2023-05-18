@@ -1,16 +1,20 @@
 using UnityEngine;
 
-public interface IEngine
+namespace Car.Engine
 {
-    float MaxSpeed { get; }
-    float Acceleration { get; }
-    float BrakingPower { get; }
-    float Deceleration { get; } // Add Deceleration property
-    int CurrentGear { get; }
-    int NumberOfGears { get; }
-    float RPM { get; }
+    public interface IEngine
+    {
+        float MaxSpeed { get; }
+        float Acceleration { get; }
+        float BrakingPower { get; }
+        float Deceleration { get; } // Add Deceleration property
+        int CurrentGear { get; }
+        int NumberOfGears { get; }
+        int RPM { get; }
+        int MaxRPM { get; } // Add MaxRPM property
 
-    void Accelerate(Rigidbody rb);
-    void Brake(Rigidbody rb);
-    void Decelerate(Rigidbody rb); // Add Decelerate method
+        void Accelerate(Rigidbody rb);
+        void Brake(Rigidbody rb);
+        void Decelerate(Rigidbody rb); // Add Decelerate method
+    }
 }

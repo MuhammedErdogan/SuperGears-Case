@@ -23,8 +23,9 @@ public class DependencyContainer
         Type type = instance.GetType();
         FieldInfo[] fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (FieldInfo field in fields)
+        for (int i = 0; i < fields.Length; i++)
         {
+            FieldInfo field = fields[i];
             InjectAttribute attribute = field.GetCustomAttribute<InjectAttribute>();
             if (attribute != null)
             {

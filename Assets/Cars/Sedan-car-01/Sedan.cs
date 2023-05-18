@@ -2,19 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sedan : BaseCar
+namespace Car
 {
-    private float turboBoost;
-
-    public override void Initialize(DependencyContainer container)
+    public class Sedan : BaseCar
     {
-        base.Initialize(container);
+        private float turboBoost;
 
-    }
+        public override void Initialize(DependencyContainer container)
+        {
+            base.Initialize(container);
 
-    public void ActivateTurboBoost()
-    {
-        // Add the turboBoost to the engine power.
-        //engine.AddPower(turboBoost);
+        }
+
+        public void ActivateTurboBoost()
+        {
+            // Add the turboBoost to the engine power.
+            //engine.AddPower(turboBoost);
+        }
     }
 }

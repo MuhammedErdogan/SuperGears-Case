@@ -1,61 +1,82 @@
-using System.Collections;
-using System.Collections.Generic;
+using Car.Engine;
 using UnityEngine;
 
-public abstract class BaseCar : MonoBehaviour
+namespace Car
 {
-    [SerializeField] private WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
-    [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform, rearLeftWheelTransform, rearRightWheelTransform;
-
-    [Inject] protected IEngine engine;
-    private Rigidbody rb;
-    private Vector3 startingPosition;
-
-    public virtual void Initialize(DependencyContainer container)
+    public enum DriveState
     {
-        //this.engine = container.Resolve<IEngine>();
+        Accelerate,
+        Brake,
+        Decelerate
     }
 
-    private void Awake()
+    public abstract class BaseCar : MonoBehaviour, ICar
     {
-        rb = GetComponent<Rigidbody>();
-        startingPosition = transform.position;
-    }
+        [SerializeField] private WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
+        [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform, rearLeftWheelTransform, rearRightWheelTransform;
 
-    private void FixedUpdate()
-    {
-        if (Input.GetKey(KeyCode.UpArrow))
+        [Inject] protected IEngine engine;
+        private Rigidbody rb;
+        private Vector3 _lastPosition;
+        private float _totalDistanceTravelled;
+
+        public float CurrentSpeedMs => rb.velocity.magnitude;
+        public float MaxSpeedKmh => engine.MaxSpeed;
+        public int CurrentRpm => engine.RPM;
+        public int NumberOfGears => engine.NumberOfGears;
+
+        public virtual void Initialize(DependencyContainer container)
         {
-            engine.Accelerate(rb);
-        }
-        else if (Input.GetKey(KeyCode.Space))
-        {
-            engine.Brake(rb);
-        }
-        else
-        {
-            engine.Decelerate(rb);
+
         }
 
-        EventManager.TriggerEvent(EventManager.OnCarMove, rb);
-        UpdateWheelPoses();
-    }
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody>();
+            _lastPosition = transform.position;
+        }
 
-    private void UpdateWheelPoses()
-    {
-        UpdateWheelPoseAndRot(frontLeftWheel, frontLeftWheelTransform);
-        UpdateWheelPoseAndRot(frontRightWheel, frontRightWheelTransform);
-        UpdateWheelPoseAndRot(rearLeftWheel, rearLeftWheelTransform);
-        UpdateWheelPoseAndRot(rearRightWheel, rearRightWheelTransform);
-    }
+        public void Drive(DriveState driveState)
+        {
+            switch (driveState)
+            {
+                case DriveState.Accelerate:
+                    engine.Accelerate(rb);
+                    break;
+                case DriveState.Brake:
+                    engine.Brake(rb);
+                    break;
+                case DriveState.Decelerate:
+                    engine.Decelerate(rb);
+                    break;
+            }
 
-    private void UpdateWheelPoseAndRot(WheelCollider wheelCollider, Transform wheelTransform)
-    {
-        wheelCollider.GetWorldPose(out Vector3 position, out _);
-        wheelTransform.position = position;
+            CalculateTravelledDistance();
+            UpdateWheelPoses();
+        }
 
-        // 2 * Mathf.PI * wheelCollider.radius = circumference of the wheel and Vector3.Distance(startingPosition, transform.position) = distance travelled by the car.
-        float rotationAngle = 360 * (Vector3.Distance(startingPosition, transform.position) / 2 * Mathf.PI * wheelCollider.radius);
-        wheelTransform.rotation = Quaternion.Euler(rotationAngle, 0, 0);
+        private void CalculateTravelledDistance()
+        {
+            _totalDistanceTravelled += Vector3.Distance(transform.position, _lastPosition);
+            _lastPosition = transform.position;
+        }
+
+        private void UpdateWheelPoses()
+        {
+            UpdateWheelPoseAndRot(frontLeftWheel, frontLeftWheelTransform);
+            UpdateWheelPoseAndRot(frontRightWheel, frontRightWheelTransform);
+            UpdateWheelPoseAndRot(rearLeftWheel, rearLeftWheelTransform);
+            UpdateWheelPoseAndRot(rearRightWheel, rearRightWheelTransform);
+        }
+
+        private void UpdateWheelPoseAndRot(WheelCollider wheelCollider, Transform wheelTransform)
+        {
+            wheelCollider.GetWorldPose(out Vector3 position, out _);
+            wheelTransform.position = position;
+
+            // 2 * Mathf.PI * wheelCollider.radius = circumference of the wheel and Vector3.Distance(_lastPosition, transform.position) = distance travelled by the car.
+            float rotationAngle = 360 * (_totalDistanceTravelled / 2 * Mathf.PI * wheelCollider.radius);
+            wheelTransform.rotation = Quaternion.Euler(rotationAngle, 0, 0);
+        }
     }
 }

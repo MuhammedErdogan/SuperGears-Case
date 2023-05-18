@@ -1,69 +1,80 @@
 ﻿using UnityEngine;
 
-public abstract class BaseEngine : IEngine
+namespace Car.Engine
 {
-    public float MaxSpeed { get; protected set; }
-    public float Acceleration { get; protected set; }
-    public float BrakingPower { get; protected set; }
-    public float Deceleration { get; protected set; }
-    public int CurrentGear { get; protected set; }
-    public int NumberOfGears { get; protected set; }
-    public float RPM { get; protected set; }
-
-    protected float gearShiftSpeed;
-
-    public virtual void Accelerate(Rigidbody rb)
+    public abstract class BaseEngine : IEngine
     {
-        var currentSpeed = rb.velocity.magnitude;
-        if (currentSpeed > MaxSpeed)
+        public float MaxSpeed { get; protected set; }
+        public float Acceleration { get; protected set; }
+        public float BrakingPower { get; protected set; }
+        public float Deceleration { get; protected set; }
+        public int CurrentGear { get; protected set; }
+        public int NumberOfGears { get; protected set; }
+        public int MaxRPM { get; protected set; }
+        public int RPM { get; protected set; }
+
+        protected float gearShiftSpeed;
+
+        protected BaseEngine(float maxSpeed, float acceleration, float brakingPower, float deceleration, int numberOfGears, int maxRpm)
         {
-            return;
+            MaxSpeed = maxSpeed;
+            Acceleration = acceleration;
+            BrakingPower = brakingPower;
+            Deceleration = deceleration;
+            NumberOfGears = numberOfGears;
+            gearShiftSpeed = maxSpeed / numberOfGears;
+            MaxRPM = maxRpm;
+
+            CurrentGear = 1;
         }
 
-        currentSpeed += Acceleration * Time.deltaTime;
-        rb.velocity = rb.transform.forward * currentSpeed;
-    }
-
-    public virtual void Brake(Rigidbody rb)
-    {
-        var currentSpeed = rb.velocity.magnitude;
-        if (currentSpeed <= 0)
+        public virtual void Accelerate(Rigidbody rb)
         {
-            return;
+            float speedDelta = Acceleration * Time.deltaTime;
+            HandleSpeedChange(rb, speedDelta);
         }
 
-        currentSpeed -= BrakingPower * Time.deltaTime;
-        rb.velocity = rb.transform.forward * currentSpeed;
-    }
-
-    public virtual void Decelerate(Rigidbody rb)
-    {
-        var currentSpeed = rb.velocity.magnitude;
-        if (currentSpeed <= 0)
+        public virtual void Brake(Rigidbody rb)
         {
-            return;
+            float speedDelta = -BrakingPower * Time.deltaTime;
+            HandleSpeedChange(rb, speedDelta);
         }
 
-        currentSpeed -= Deceleration * Time.deltaTime;
-        rb.velocity = rb.transform.forward * currentSpeed;
-    }
-
-    protected virtual void ShiftGear(float currentSpeed)
-    {
-        if (CurrentGear < NumberOfGears && currentSpeed >= gearShiftSpeed * CurrentGear)
+        public virtual void Decelerate(Rigidbody rb)
         {
-            CurrentGear++;
-            Debug.Log("Gear Shifted Up: " + CurrentGear);
+            float speedDelta = -Deceleration * Time.deltaTime;
+            HandleSpeedChange(rb, speedDelta);
         }
-        else if (CurrentGear > 1 && currentSpeed < gearShiftSpeed * (CurrentGear - 1))
-        {
-            CurrentGear--;
-            Debug.Log("Gear Shifted Down: " + CurrentGear);
-        }
-    }
 
-    protected virtual void CalculateRPM(float currentSpeed)
-    {
-        RPM = currentSpeed * CurrentGear * 60;
+        protected virtual void HandleSpeedChange(Rigidbody rb, float speedDelta)
+        {
+            float currentSpeed = rb.velocity.magnitude;
+            currentSpeed += speedDelta;
+            currentSpeed = Mathf.Clamp(currentSpeed, 0, MaxSpeed);
+
+            rb.velocity = rb.transform.forward * currentSpeed;
+            ShiftGear(currentSpeed);
+            CalculateRPM(currentSpeed);
+        }
+
+        protected virtual void ShiftGear(float currentSpeed)
+        {
+            var nextGearRpm = (MaxRPM - (MaxRPM / NumberOfGears));
+            if (CurrentGear < NumberOfGears && RPM > nextGearRpm)
+            {
+                CurrentGear++;
+            }
+            else if (CurrentGear > 1 && RPM > nextGearRpm)
+            {
+                CurrentGear--;
+            }
+
+            EventManager.TriggerEvent(EventManager.OnGearChange, CurrentGear);
+        }
+
+        protected virtual void CalculateRPM(float currentSpeed)
+        {
+            RPM = (int)(currentSpeed * 360) / CurrentGear;
+        }
     }
 }

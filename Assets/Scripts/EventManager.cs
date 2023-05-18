@@ -149,8 +149,8 @@ public static class EventManager
     public static readonly Action Connected = () => { };
 
     public static readonly Action CarInitialized = () => { };
-    public static readonly Action<float> NotifySpeed = (float _) => { };
-    public static readonly Action<Rigidbody> OnCarMove = (Rigidbody _) => { };
+    public static readonly Action<float, float> OnCarMove = (float _, float __) => { };
 
+    public static readonly Action<int> OnGearChange = (int _) => { };
     #endregion
 }
