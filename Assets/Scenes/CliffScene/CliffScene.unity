@@ -2577,7 +2577,7 @@ GameObject:
   - component: {fileID: 633831955}
   - component: {fileID: 633831954}
   m_Layer: 5
-  m_Name: duration_text_v
+  m_Name: time_text_v
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2601,7 +2601,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 50, y: 25}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &633831954
 MonoBehaviour:
@@ -2987,7 +2987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &690269257
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4913,7 +4913,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 50, y: -25}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &887136672
 MonoBehaviour:
@@ -8494,7 +8494,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 10
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -9023,6 +9023,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddeb89655eadcd34488b6b4fcef0e56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetLocation: {fileID: 0}
+  startLocation: {fileID: 0}
 --- !u!1001 &1297973868
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10346,6 +10348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLocation: {fileID: 687275069}
+  startLocation: {fileID: 334219112}
 --- !u!1 &1544240435
 GameObject:
   m_ObjectHideFlags: 0
@@ -12871,7 +12874,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 50, y: 75}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1938103362
 MonoBehaviour:
@@ -13072,6 +13075,7 @@ GameObject:
   - component: {fileID: 1957039162}
   - component: {fileID: 1957039161}
   - component: {fileID: 1957039160}
+  - component: {fileID: 1957039163}
   m_Layer: 5
   m_Name: restart_button
   m_TagString: Untagged
@@ -13182,6 +13186,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1957039158}
   m_CullTransparentMesh: 1
+--- !u!114 &1957039163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957039158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59ea889c670cc61409ec0c5f97293e6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _clickableType: 3
 --- !u!1 &1965654776
 GameObject:
   m_ObjectHideFlags: 0
@@ -13473,8 +13490,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _onStart: {fileID: 1916416912}
-  onDrive: {fileID: 682516370}
-  onFinish: {fileID: 690269256}
+  _onDrive: {fileID: 682516370}
+  _onFinish: {fileID: 690269256}
+  _timeText: {fileID: 633831954}
+  _averageSpeedText: {fileID: 887136672}
+  _maxSpeedText: {fileID: 1938103362}
 --- !u!1001 &2024424047
 PrefabInstance:
   m_ObjectHideFlags: 0

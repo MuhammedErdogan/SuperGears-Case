@@ -1,13 +1,18 @@
+using Others;
 using UnityEngine;
 
 namespace Car.Other
 {
     public class CarAudioService : IAudioService
     {
+        #region Injected Services
         [Inject] private AudioSource _engineAudioSource;
         [Inject] private AudioClip _engineAudioClip;
+        #endregion
 
+        #region Private Fields
         private bool _isEngineSoundPlaying;
+        #endregion
 
         public void PlaySound()
         {

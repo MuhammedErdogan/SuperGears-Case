@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Resource
+namespace Others
 {
     public static class Extension
     {
         public static void ScaleTo(this Transform transform, Vector3 targetScale, float duration, Action callBack = null)
         {
-            CoroutineManager.Instance.StartCoroutine(ScaleToCoroutine(transform, targetScale, duration, callBack));
+            transform.GetComponent<MonoBehaviour>().StartCoroutine(ScaleToCoroutine(transform, targetScale, duration, callBack));
         }
 
         private static IEnumerator ScaleToCoroutine(Transform transform, Vector3 targetScale, float duration, Action callBack)
@@ -32,12 +32,12 @@ namespace Resource
             callBack?.Invoke();
         }
 
-        public static void ChangeTo(this MonoBehaviour behaviour, float startValue, float targetValue, float duration, Action<float> onUpdate, Action<float> onComplete = null)
+        public static void ChangeTo(this MonoBehaviour behaviour, float startValue, float targetValue, float duration, Action<float> onUpdate, out Coroutine coroutine, Action<float> onComplete = null)
         {
-            CoroutineManager.Instance.StartCoroutine(ChangeToCoroutine(behaviour, startValue, targetValue, duration, onUpdate, onComplete));
+            coroutine = behaviour.StartCoroutine(ChangeToCoroutine(startValue, targetValue, duration, onUpdate, onComplete));
         }
 
-        private static IEnumerator ChangeToCoroutine(MonoBehaviour behaviour, float startValue, float targetValue, float duration, Action<float> onUpdate, Action<float> onComplete)
+        private static IEnumerator ChangeToCoroutine(float startValue, float targetValue, float duration, Action<float> onUpdate, Action<float> onComplete)
         {
             float time = 0;
 
@@ -56,23 +56,16 @@ namespace Resource
 
             onComplete?.Invoke(targetValue);
         }
-    }
-}
-
-public class CoroutineManager : MonoBehaviour
-{
-    private static CoroutineManager _instance;
-    public static CoroutineManager Instance
-    {
-        get
+        public static void DelayedAction(this MonoBehaviour monoBehaviour, float delay, Action action, out Coroutine coroutine)
         {
-            if (_instance == null)
-            {
-                GameObject go = new GameObject("CoroutineManager");
-                _instance = go.AddComponent<CoroutineManager>();
-                DontDestroyOnLoad(go);
-            }
-            return _instance;
+            coroutine = monoBehaviour.StartCoroutine(DelayedCoroutine(delay, action));
+        }
+
+        private static IEnumerator DelayedCoroutine(float delay, Action action)
+        {
+            yield return BetterWaitForSeconds.Wait(delay);
+            action();
         }
     }
+
 }

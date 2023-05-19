@@ -1,19 +1,23 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public enum ClickableType
+namespace Others
 {
-    PauseButton,
-    ResumeButton,
-    RestartButton,
-}
-
-public class ClickableElement : MonoBehaviour, IPointerClickHandler
-{
-    [SerializeField] private ClickableType _clickableType;
-
-    public void OnPointerClick(PointerEventData eventData)
+    public enum ClickableType : byte
     {
-        EventManager.TriggerEvent(EventManager.OnClick, _clickableType);
+        StartButton,
+        PauseButton,
+        ResumeButton,
+        RestartButton,
+    }
+
+    public class ClickableElement : MonoBehaviour, IPointerClickHandler
+    {
+        [SerializeField] private ClickableType _clickableType;
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            EventManager.TriggerEvent(EventManager.OnClick, _clickableType);
+        }
     }
 }

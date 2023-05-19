@@ -12,22 +12,32 @@ namespace Car
 
     public abstract class BaseCar : MonoBehaviour, ICar
     {
+        #region Serialized Fields
         [SerializeField] private WheelCollider frontLeftWheel, frontRightWheel, rearLeftWheel, rearRightWheel;
         [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform, rearLeftWheelTransform, rearRightWheelTransform;
+        #endregion
 
+        #region Injected Fields
         [Inject] protected IEngine engine;
+        #endregion
+
+        #region Private Fields
         private Rigidbody rb;
         private Vector3 _lastPosition;
         private float _totalDistanceTravelled;
+        #endregion
 
+        #region Properties
         public float CurrentSpeedMs => rb.velocity.magnitude;
         public float MaxSpeedKmh => engine.MaxSpeed;
         public int CurrentRpm => engine.RPM;
         public int NumberOfGears => engine.NumberOfGears;
+        public float TotalDistanceTravelled => _totalDistanceTravelled;
+        #endregion
 
         public virtual void Initialize()
         {
-
+            rb.velocity = Vector3.zero;
         }
 
         private void Awake()

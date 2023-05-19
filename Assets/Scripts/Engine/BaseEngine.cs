@@ -4,6 +4,7 @@ namespace Engine
 {
     public abstract class BaseEngine : IEngine
     {
+        #region Properties
         public float MaxSpeed { get; protected set; }
         public float Acceleration { get; protected set; }
         public float BrakingPower { get; protected set; }
@@ -12,8 +13,11 @@ namespace Engine
         public int NumberOfGears { get; protected set; }
         public int MaxRPM { get; protected set; }
         public int RPM { get; protected set; }
+        #endregion
 
+        #region Variables
         protected float gearShiftSpeed;
+        #endregion
 
         protected BaseEngine(float maxSpeed, float acceleration, float brakingPower, float deceleration, int numberOfGears, int maxRpm)
         {

@@ -6,27 +6,32 @@ namespace Car.Display
 {
     public class RpmMeter : MonoBehaviour
     {
+        #region Serialized Fields
         [SerializeField] private RectTransform _needle;
         [SerializeField] private TextMeshProUGUI _currentGearText;
+        #endregion
 
+        #region Private Fields
         private GameObject _numberPrefab;
-
         private float _maxRPM = 7000f;  // Maximum RPM for your RPM meter
-        private int _numberOfMarks = 10;  // The number of marks on your RPM meter.
+        private readonly int _numberOfMarks = 10;  // The number of marks on your RPM meter.
+        private readonly float _maxAngle = -130f;  // The maximum rotation of the needle
+        private readonly float _minAngle = 130f;  // The minimum rotation of the needle
+        #endregion
 
-        private float _maxAngle = -130f;  // The maximum rotation of the needle
-        private float _minAngle = 130f;  // The minimum rotation of the needle
-
+        #region Injected Fields
         [Inject] private Engine.IEngine _engine;
+        #endregion
 
         private void Awake()
         {
-            _numberPrefab = Resources.Load<GameObject>("Prefabs/Number");
+            _numberPrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/Number");
         }
 
         private void OnEnable()
         {
             EventManager.StartListening(EventManager.GameLoaded, Initialize);
+            EventManager.StartListening(EventManager.OnTourRestart, ResetRpmMeter);
             EventManager.StartListening(EventManager.OnCarMove, UpdateRPMMeter);
             EventManager.StartListening(EventManager.OnGearChange, UpdateGear);
         }
@@ -34,6 +39,7 @@ namespace Car.Display
         private void OnDisable()
         {
             EventManager.StopListening(EventManager.GameLoaded, Initialize);
+            EventManager.StopListening(EventManager.OnTourRestart, ResetRpmMeter);
             EventManager.StopListening(EventManager.OnCarMove, UpdateRPMMeter);
             EventManager.StopListening(EventManager.OnGearChange, UpdateGear);
         }
@@ -41,10 +47,15 @@ namespace Car.Display
         private void Initialize()
         {
             _maxRPM = _engine.MaxRPM;
-            _numberOfMarks = _engine.NumberOfGears;
+            //_numberOfMarks = _engine.NumberOfGears;
 
             GenerateNumbers();
-            UpdateRPMMeter();
+            UpdateRPMMeter(0);
+        }
+
+        private void ResetRpmMeter()
+        {
+            UpdateRPMMeter(0);
         }
 
         private void UpdateGear(int currentGear)
