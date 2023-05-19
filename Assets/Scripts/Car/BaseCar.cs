@@ -25,7 +25,7 @@ namespace Car
         public int CurrentRpm => engine.RPM;
         public int NumberOfGears => engine.NumberOfGears;
 
-        public virtual void Initialize(DependencyContainer container)
+        public virtual void Initialize()
         {
 
         }
@@ -53,6 +53,8 @@ namespace Car
 
             CalculateTravelledDistance();
             UpdateWheelPoses();
+
+            EventManager.TriggerEvent(EventManager.OnCarMove, CurrentSpeedMs, CurrentRpm, _totalDistanceTravelled);
         }
 
         private void CalculateTravelledDistance()

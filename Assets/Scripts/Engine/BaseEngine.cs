@@ -59,12 +59,11 @@ namespace Car.Engine
 
         protected virtual void ShiftGear(float currentSpeed)
         {
-            var nextGearRpm = (MaxRPM - (MaxRPM / NumberOfGears));
-            if (CurrentGear < NumberOfGears && RPM > nextGearRpm)
+            if (CurrentGear < NumberOfGears && RPM > (MaxRPM - (MaxRPM / NumberOfGears)))
             {
                 CurrentGear++;
             }
-            else if (CurrentGear > 1 && RPM > nextGearRpm)
+            else if (CurrentGear > 1 && RPM < (MaxRPM / (NumberOfGears - 1)))
             {
                 CurrentGear--;
             }

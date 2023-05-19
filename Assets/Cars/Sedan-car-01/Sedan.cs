@@ -8,9 +8,9 @@ namespace Car
     {
         private float turboBoost;
 
-        public override void Initialize(DependencyContainer container)
+        public override void Initialize()
         {
-            base.Initialize(container);
+            base.Initialize();
 
         }
 

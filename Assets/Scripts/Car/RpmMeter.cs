@@ -7,8 +7,9 @@ namespace Car.Display
     public class RpmMeter : MonoBehaviour
     {
         [SerializeField] private RectTransform _needle;
-        [SerializeField] private GameObject _numberPrefab;
         [SerializeField] private TextMeshProUGUI _currentGearText;
+
+        private GameObject _numberPrefab;
 
         private float _maxRPM = 7000f;  // Maximum RPM for your RPM meter
         private int _numberOfMarks = 10;  // The number of marks on your RPM meter.
@@ -16,29 +17,34 @@ namespace Car.Display
         private float _maxAngle = -130f;  // The maximum rotation of the needle
         private float _minAngle = 130f;  // The minimum rotation of the needle
 
-        [Inject] private Engine.IEngine engine;
+        [Inject] private Engine.IEngine _engine;
+
+        private void Awake()
+        {
+            _numberPrefab = Resources.Load<GameObject>("Prefabs/Number");
+        }
 
         private void OnEnable()
         {
-            EventManager.StartListening(EventManager.CarInitialized, Initialize);
+            EventManager.StartListening(EventManager.GameLoaded, Initialize);
             EventManager.StartListening(EventManager.OnCarMove, UpdateRPMMeter);
             EventManager.StartListening(EventManager.OnGearChange, UpdateGear);
         }
 
         private void OnDisable()
         {
-            EventManager.StopListening(EventManager.CarInitialized, Initialize);
+            EventManager.StopListening(EventManager.GameLoaded, Initialize);
             EventManager.StopListening(EventManager.OnCarMove, UpdateRPMMeter);
             EventManager.StopListening(EventManager.OnGearChange, UpdateGear);
         }
 
         private void Initialize()
         {
-            _maxRPM = engine.MaxRPM;
-            _numberOfMarks = engine.NumberOfGears;
+            _maxRPM = _engine.MaxRPM;
+            _numberOfMarks = _engine.NumberOfGears;
 
             GenerateNumbers();
-            UpdateRPMMeter(0, 0);
+            UpdateRPMMeter();
         }
 
         private void UpdateGear(int currentGear)
@@ -46,7 +52,7 @@ namespace Car.Display
             _currentGearText.text = currentGear.ToString();
         }
 
-        private void UpdateRPMMeter(float _, float currentRPM)
+        private void UpdateRPMMeter(float _ = 0, float currentRPM = 0, float __ = 0)
         {
             // currentRPM / _maxRPM is the fraction of the current RPM to the maximum RPM
             float angle = Mathf.Lerp(_minAngle, _maxAngle, currentRPM / _maxRPM);

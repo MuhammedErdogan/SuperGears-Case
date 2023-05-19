@@ -1,4 +1,6 @@
 using Car;
+using Car.Display;
+using Car.Engine;
 using UnityEngine;
 
 namespace Controller
@@ -11,10 +13,14 @@ namespace Controller
 
         private BaseCar _car;
         private DriveState _driveState;
+        private IAudioService _carAudioService;
+        private IEngine _engine;
 
         public float SpeedMs { get; private set; }
         public float SpeedKmh { get; private set; }
         public float SpeedMph { get; private set; }
+
+        private bool _isTourStarted;
 
         private void Start()
         {
@@ -27,8 +33,8 @@ namespace Controller
 
             var container = new DependencyContainer();
 
-            IEngine standardEngine = new StandardEngine(100f, 10f, 20f, 5f, 5, 7000);
-            container.Register(standardEngine);
+            _engine = new StandardEngine(100f, 10f, 20f, 5f, 5, 7000);
+            container.Register(_engine);
 
             var sedan = _car as Sedan;
             container.InjectDependencies(_car);
@@ -39,19 +45,33 @@ namespace Controller
             var rpmMeter = FindObjectOfType<RpmMeter>();
             container.InjectDependencies(rpmMeter);
 
-            EventManager.TriggerEvent(EventManager.CarInitialized);
+            container = new DependencyContainer();
+            _carAudioService = new CarAudioService();
+            var audioSource = sedan.GetComponent<AudioSource>();
+            var carAudioClip = audioSource.clip;
+
+            container.Register(audioSource);
+            container.Register(carAudioClip);
+            container.InjectDependencies(_carAudioService);
+
+            _carAudioService.PlaySound();
+            EventManager.TriggerEvent(EventManager.GameLoaded);
         }
 
         private void OnEnable()
         {
+            EventManager.StartListening(EventManager.OnCountdownEnded, StartTour);
         }
 
         private void OnDisable()
         {
+            EventManager.StopListening(EventManager.OnCountdownEnded, StartTour);
         }
 
         private void FixedUpdate()
         {
+            if (!_isTourStarted) return;
+
             if (Input.GetKey(KeyCode.UpArrow))
                 _driveState = DriveState.Accelerate;
             else if (Input.GetKey(KeyCode.Space))
@@ -60,8 +80,12 @@ namespace Controller
                 _driveState = DriveState.Decelerate;
 
             _car.Drive(_driveState);
+            _carAudioService.UpdatePitch(_car.CurrentRpm, _engine.MaxRPM);
+        }
 
-            EventManager.TriggerEvent(EventManager.OnCarMove, _car.CurrentSpeedMs, _car.CurrentRpm);
+        private void StartTour()
+        {
+            _isTourStarted = true;
         }
     }
 }
