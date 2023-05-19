@@ -18,6 +18,7 @@ namespace Car.Display
         private float _minAngle = 130f;  // the minimum rotation of the needle
 
         [Inject] private Engine.IEngine _engine;
+        private Action<float> UpdateSpeed;
 
         private void Awake()
         {

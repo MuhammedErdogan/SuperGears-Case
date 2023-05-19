@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Car.Engine
+namespace Engine
 {
     public interface IEngine
     {

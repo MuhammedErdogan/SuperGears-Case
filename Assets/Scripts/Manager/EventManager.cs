@@ -142,12 +142,14 @@ public static class EventManager
     public static readonly Action GameFinished = () => { };
     public static readonly Action GamePaused = () => { };
     public static readonly Action GameResumed = () => { };
-
     public static readonly Action GameLoaded = () => { };
-    public static readonly Action<float, float, float> OnCarMove = (float _, float __, float ___) => { };
+    public static readonly Action<ClickableType> OnClick = (ClickableType _) => { };
 
+    public static readonly Action<float, float, float> OnCarMove = (float _, float __, float ___) => { };
     public static readonly Action<int> OnGearChange = (int _) => { };
 
     public static readonly Action OnCountdownEnded = () => { };
+    public static readonly Action TourStarted = () => { };
+    public static readonly Action OnTourCompleted = () => { };
     #endregion
 }

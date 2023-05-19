@@ -31,6 +31,31 @@ namespace Resource
             transform.localScale = targetScale;  // Ensure the target scale is set exactly at the end
             callBack?.Invoke();
         }
+
+        public static void ChangeTo(this MonoBehaviour behaviour, float startValue, float targetValue, float duration, Action<float> onUpdate, Action<float> onComplete = null)
+        {
+            CoroutineManager.Instance.StartCoroutine(ChangeToCoroutine(behaviour, startValue, targetValue, duration, onUpdate, onComplete));
+        }
+
+        private static IEnumerator ChangeToCoroutine(MonoBehaviour behaviour, float startValue, float targetValue, float duration, Action<float> onUpdate, Action<float> onComplete)
+        {
+            float time = 0;
+
+            while (time < duration)
+            {
+                time += Time.deltaTime;
+                float progress = time / duration;
+                float currentValue = Mathf.Lerp(startValue, targetValue, progress);
+
+                onUpdate(currentValue);
+
+                yield return null;
+            }
+
+            onUpdate(targetValue);  // Ensure the target value is set exactly at the end
+
+            onComplete?.Invoke(targetValue);
+        }
     }
 }
 
