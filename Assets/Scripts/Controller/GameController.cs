@@ -74,7 +74,6 @@ namespace Controller
             }
 
             DependencyManager container = new DependencyManager();
-
             var followCarController = FindObjectOfType<CameraController>();
             container.Register(_car.transform);
             container.InjectDependencies(followCarController);
@@ -83,13 +82,17 @@ namespace Controller
             container.Register(_engine);
             container.InjectDependencies(_carInterface);
 
+            container = new DependencyManager();
+            container.Register(_engine.MaxSpeed);
             var speedometer = FindObjectOfType<Speedometer>(true);
-            var rpmMeter = FindObjectOfType<RpmMeter>(true);
             container.InjectDependencies(speedometer);
+
+            container = new DependencyManager();
+            container.Register(_engine.MaxRPM);
+            var rpmMeter = FindObjectOfType<RpmMeter>(true);
             container.InjectDependencies(rpmMeter);
 
             container = new DependencyManager();
-
             _carAudioService = new CarAudioService();
             var audioSource = _car.GetComponent<AudioSource>();
             var carAudioClip = audioSource.clip;

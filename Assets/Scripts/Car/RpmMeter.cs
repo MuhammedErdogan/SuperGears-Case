@@ -13,19 +13,18 @@ namespace Car.Display
 
         #region Private Fields
         private GameObject _numberPrefab;
-        private float _maxRPM = 7000f;  // Maximum RPM for your RPM meter
         private readonly int _numberOfMarks = 10;  // The number of marks on your RPM meter.
         private readonly float _maxAngle = -130f;  // The maximum rotation of the needle
         private readonly float _minAngle = 130f;  // The minimum rotation of the needle
         #endregion
 
         #region Injected Fields
-        [Inject] private Engine.IEngine _engine;
+        [Inject] private int _maxRPM = 7000;
         #endregion
 
         private void Awake()
         {
-            _numberPrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/Number");
+            _numberPrefab = Resources.Load<GameObject>("Prefabs/Number");
         }
 
         private void OnEnable()
@@ -46,9 +45,6 @@ namespace Car.Display
 
         private void Initialize()
         {
-            _maxRPM = _engine.MaxRPM;
-            //_numberOfMarks = _engine.NumberOfGears;
-
             GenerateNumbers();
             UpdateRPMMeter(0);
         }

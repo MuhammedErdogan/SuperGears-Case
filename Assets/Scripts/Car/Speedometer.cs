@@ -21,7 +21,7 @@ namespace Car.Display
         #endregion
 
         #region Injected Fields
-        [Inject] private Engine.IEngine _engine;
+        [Inject] private float _maxSpeed;
         #endregion
 
         #region Actions
@@ -49,8 +49,7 @@ namespace Car.Display
 
         private void Initialize()
         {
-            _maxSpeedKmh = _engine.MaxSpeed * 3.6f;
-            //_numberOfMarks = _engine.NumberOfGears;
+            _maxSpeedKmh = _maxSpeed * 3.6f;
 
             GenerateNumbers();
             UpdateSpeedometer(0);
