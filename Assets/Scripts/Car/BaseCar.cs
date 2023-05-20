@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Car
 {
-    public enum DriveState
+    public enum DriveState : byte
     {
         Accelerate,
         Brake,
